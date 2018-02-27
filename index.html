@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VHS Spaces</title>
+    <script>
+        const obj = {
+            name: "",
+            description: "",
+            version: "",
+            location: {
+                name: "",
+                address: ""
+            },
+            agent: {
+                name: "",
+                email: [""],
+                phone: [""]
+            },
+            resources: [
+                {
+                    name: "",
+                    uri: ""
+                }
+            ],
+            size: 123,
+            price: {
+                rent: 123,
+                ops: 123
+            }
+        };
+
+        function resize(form, event) {
+            const sqft = event.target.value;
+
+            document.forms['name']
+        }
+
+        function reprice(form) {
+
+        }
+
+        function balance(form, event) {
+            const val = event.target.value;
+
+            const sqft = document.getElementById("size.sqft").value || 1;
+
+            switch(event.target.name) {
+                case "month":
+                    form["sqft.month"].value = val / sqft;
+                    form["sqft.year"].value = (val / sqft) * 12;
+                    break;
+                case "sqft.month":
+                    form["sqft.year"].value = val * 12;
+                    form["month"].value = val * sqft;
+                    break;
+                case "sqft.year":
+                    form["sqft.month"].value = val / 12;
+                    form["month"].value = (val * sqft) / 12;
+                    break;
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <fieldset name="location">
+        <legend>Location</legend>
+
+        <label for="location.name">Name</label>
+        <input type="text" name="name" id="location.name" />
+
+        <label for="location.address">Address</label>
+        <input type="text" name="address" id="location.address" />
+    </fieldset>
+
+    <fieldset name="agent">
+        <legend>Agent</legend>
+
+        <label for="agent.name">Name</label>
+        <input type="text" name="name" id="agent.name">
+
+        <label for="agent.email">E-Mail</label>
+        <input type="text" name="name" id="agent.email">
+
+        <label for="agent.phone">Phone</label>
+        <input type="text" name="name" id="agent.phone">
+    </fieldset>
+
+    <fieldset name="resources">
+        <legend>Resources</legend>
+        list
+    </fieldset>
+
+    <form name="size" id="size" oninput="resize(this, event)">
+        <fieldset name="size">
+            <legend>Size</legend>
+            <label for="size.sqft">Sqft</label>
+            <input type="number" name="sqft" id="size.sqft"/>
+        </fieldset>
+    </form>
+
+    <fieldset name="price">
+        <legend>Price</legend>
+        <form name="rent" id="price.rent" oninput="balance(this, event)">
+            <fieldset name="rent">
+                <legend>Rent</legend>
+                <input type="number" name="sqft.year" id="price.rent.sqft.year"/><label for="price.rent.sqft.year">/sqft/yr</label>
+                <input type="number" name="sqft.month" id="price.rent.sqft.month"/><label for="price.rent.sqft.month">/sqft/mo</label>
+                <input type="number" name="month" id="price.rent.month"/><label for="price.rent.month">/mo</label>
+            </fieldset>
+        </form>
+
+        <form name="rent" id="price.ops" oninput="balance(this, event)">
+            <fieldset name="ops">
+                <legend>Ops</legend>
+                <input type="number" name="sqft.year" id="price.ops.sqft.year"/><label for="price.ops.sqft.year">/sqft/yr</label>
+                <input type="number" name="sqft.month" id="price.ops.sqft.month"/><label for="price.ops.sqft.month">/sqft/mo</label>
+                <input type="number" name="month" id="price.ops.month"/><label for="price.ops.month">/mo</label>
+            </fieldset>
+        </form>
+
+    </fieldset>
+
+
+<form>
+    <fieldset name="VHS">
+        <legend>VHS</legend>
+
+        <fieldset name="revenue">
+            <legend>Revenue</legend>
+            list
+        </fieldset>
+
+        <fieldset name="cost">
+            <legend>Cost</legend>
+            list
+        </fieldset>
+
+        <fieldset name="assets">
+            <legend>Assets</legend>
+            list
+        </fieldset>
+    </fieldset>
+</form>
+
+</body>
+</html>
