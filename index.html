@@ -2,6 +2,17 @@
 <html>
 <head>
     <title>VHS Spaces</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            font: 1em "Fira Sans", sans-serif;
+        }
+
+        fieldset {
+
+        }
+    </style>
     <script>
         const obj = {
             name: "",
@@ -32,19 +43,18 @@
         function resize(form, event) {
             const sqft = event.target.value;
 
-            document.forms['name']
-        }
+            balance(document.forms['price.rent']);
+            balance(document.forms['price.ops']);
 
-        function reprice(form) {
-
+            calculate();
         }
 
         function balance(form, event) {
-            const val = event.target.value;
-
+            const el = (event && event.target) ? event.target : form["sqft.year"];
+            const val = el.value;
             const sqft = document.getElementById("size.sqft").value || 1;
 
-            switch(event.target.name) {
+            switch(el.name) {
                 case "month":
                     form["sqft.month"].value = val / sqft;
                     form["sqft.year"].value = (val / sqft) * 12;
@@ -58,8 +68,89 @@
                     form["month"].value = (val * sqft) / 12;
                     break;
             }
+
+            calculate();
         }
-    </script>
+
+        function calculate() {
+            const sqft = Number.parseFloat(document.getElementById("size.sqft").value || 1);
+            const rent = Number.parseFloat(document.forms["price.rent"]["sqft.year"].value || 0);
+            const ops = Number.parseFloat(document.forms["price.ops"]["sqft.year"].value || 0);
+
+            document.getElementById("price.total.yearly").value = (sqft * (rent + ops)).toLocaleString("en-CA", {
+                style: "currency",
+                currency: "CAD",
+                currencyDisplay: "symbol"
+            });
+            document.getElementById("price.total.monthly").value = ((sqft * (rent + ops)) / 12).toLocaleString("en-CA", {
+                style: "currency",
+                currency: "CAD",
+                currencyDisplay: "symbol"
+            });
+        }
+
+        function add(el) {
+            const list = document.getElementById(el.dataset.for);
+
+            const prefix = `${el.dataset.for}_${list.childElementCount}_`;
+
+            const li = document.createElement("li");
+            {
+                li.id = `${prefix}li`;
+
+                const name = document.createElement("input");
+                {
+                    name.id = `${prefix}name`;
+                    name.type = "text";
+                    name.placeholder = "Name";
+                }
+
+                const value = document.createElement("input");
+                {
+                    value.id = `${prefix}value`;
+                    value.type = "number";
+                    value.placeholder = "Amount";
+                }
+
+                const label = document.createElement("label");
+                {
+                    label.for = `${prefix}monthly`;
+                    label.appendChild(document.createTextNode("Monthly"));
+                }
+
+                const monthly = document.createElement("input");
+                {
+                    monthly.id = `${prefix}monthly`;
+                    monthly.type = "checkbox";
+                    monthly.value = "monthly";
+                    monthly.checked = true;
+                    monthly.onchange = (e) => {
+                        if (monthly.checked) {
+                            label.innerText = "Monthly";
+                        } else {
+                            label.innerText = "Yearly";
+                        }
+                    };
+                }
+
+                const remove = document.createElement("button");
+                {
+                    remove.id = `${prefix}remove`;
+                    remove.appendChild(document.createTextNode("-"));
+                    remove.onclick = () => document.getElementById(`${prefix}li`).remove();
+                }
+
+                li.appendChild(name);
+                li.appendChild(value);
+                li.appendChild(monthly);
+                li.appendChild(label);
+                li.appendChild(remove);
+            }
+
+            list.appendChild(li);
+        }
+
+</script>
 </head>
 <body>
 
@@ -101,6 +192,8 @@
 
     <fieldset name="price">
         <legend>Price</legend>
+        <output id="price.total.yearly" name="price.total.yearly"></output>/yearly
+        <output id="price.total.monthly" name="price.total.monthly"></output>/monthly
         <form name="rent" id="price.rent" oninput="balance(this, event)">
             <fieldset name="rent">
                 <legend>Rent</legend>
@@ -122,26 +215,32 @@
     </fieldset>
 
 
-<form>
-    <fieldset name="VHS">
-        <legend>VHS</legend>
+<fieldset name="VHS">
+    <legend>VHS</legend>
 
-        <fieldset name="revenue">
-            <legend>Revenue</legend>
-            list
-        </fieldset>
-
-        <fieldset name="cost">
-            <legend>Cost</legend>
-            list
-        </fieldset>
-
-        <fieldset name="assets">
-            <legend>Assets</legend>
-            list
-        </fieldset>
+    <fieldset name="revenue">
+        <legend>Revenue</legend>
+        <button id="revenues.add" data-for="revenues" onclick="add(this)">+</button>
+        <ul id="revenues"></ul>
+        <output id="revenue.total.yearly" name="revenue.total.yearly"></output>
+        <output id="revenue.total.monthly" name="revenue.total.monthly"></output>
     </fieldset>
-</form>
+
+    <fieldset name="cost">
+        <legend>Cost</legend>
+        <button id="costs.add" data-for="costs" onclick="add(this)">+</button>
+        <ul id="costs"></ul>
+        <output id="costs.total.yearly" name="costs.total.yearly"></output>
+        <output id="costs.total.monthly" name="costs.total.monthly"></output>
+    </fieldset>
+
+    <fieldset name="assets">
+        <legend>Assets</legend>
+        <button id="assets.add" data-for="assets" onclick="add(this)">+</button>
+        <ul id="assets"></ul>
+        <output id="assets.total" name="assets.total"></output>
+    </fieldset>
+</fieldset>
 
 </body>
 </html>
